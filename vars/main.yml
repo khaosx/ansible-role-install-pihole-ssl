@@ -1,0 +1,155 @@
+---
+# defaults file for pihole-ssl
+
+pihole_apps_needed:
+  - curl
+  - sudo
+  - wget
+  - unzip
+  - ca-certificates
+
+install_pihole: true
+install_letsencrypt_ssl_cert: true
+
+pihole_web_admin_password: "default_password"
+cf_dns_email: "default_email@example.com"
+cf_dns_api: "default_api_key"
+admin_email: "default_admin_email@example.com"
+
+pihole_interface: eth0
+pihole_setup_dnssec: true
+pihole_setup_rev_server: true
+pihole_setup_rev_server_cidr: 192.168.0.0/24
+pihole_setup_rev_server_target: 192.168.0.1
+pihole_setup_rev_server_domain: local
+pihole_setup_cache_size: 10000
+pihole_setup_pihole_dns_1: 1.1.1.1
+pihole_setup_pihole_dns_2: 1.0.0.1
+pihole_setup_ftlconf_rate_limit: 1000
+
+
+---
+
+############################################################################################
+#                                   Install Options                                        #
+############################################################################################
+
+install_pihole: true
+install_letsencrypt_ssl_cert: true
+fqdn: khaosx.io
+
+############################################################################################
+#                         Pre-requisite installs for pihole/unbound                        #
+############################################################################################
+
+pihole_apps_needed:
+  - netcat-traditional
+  - unzip
+  - idn2
+  - sqlite3
+  - lighttpd
+  - php-common
+  - php-cgi
+  - php-sqlite3
+  - php-xml
+  - php-intl
+  - certbot
+  - python3-certbot-dns-cloudflare
+  - dns-root-data
+
+############################################################################################
+#                               Setup config for pihole                                    #
+############################################################################################
+
+admin_email: misterk71@gmail.com
+pihole_interface: "eth0"
+pihole_setup_dnssec: true
+pihole_setup_rev_server: true
+pihole_setup_rev_server_cidr: 192.168.0.0/16
+pihole_setup_rev_server_target: 192.168.10.1
+pihole_setup_rev_server_domain: khaosx.io
+pihole_setup_cache_size: 10000
+pihole_setup_ftlconf_rate_limit: 5000/60
+pihole_setup_pihole_dns_1: 1.1.1.1
+pihole_setup_pihole_dns_2: 1.0.0.1
+
+############################################################################################
+#                             Enter custom DNS entries here                                #
+############################################################################################
+
+pihole_custom_dns_entries:
+  - name: rtr-udmse.khaosx.io
+    addr: 192.168.10.1
+  - name: sw-usw-agg.khaosx.io
+    addr: 192.168.10.2
+  - name: sw-usw24poe.khaosx.io
+    addr: 192.168.10.3
+  - name: sw-uswflexmini-upstairs.khaosx.io
+    addr: 192.168.10.4
+  - name: sw-uswflexmini-theater.khaosx.io
+    addr: 192.168.10.5
+  - name: ap-u6lite-main.khaosx.io
+    addr: 192.168.10.12
+  - name: ap-uapiwhd-office.khaosx.io
+    addr: 192.168.10.13
+  - name: sw-uapacpro-upstairs.khaosx.io
+    addr: 192.168.10.14
+  - name: sw-uapacpro-basement.khaosx.io
+    addr: 192.168.10.15
+  - name: proxmox-01.khaosx.io
+    addr: 192.168.10.18
+  - name: proxmox-01-mgt.khaosx.io
+    addr: 192.168.16.18
+  - name: proxmox-02.khaosx.io
+    addr: 192.168.10.19
+  - name: proxmox-02-mgt.khaosx.io
+    addr: 192.168.16.19
+  - name: proxmox-03.khaosx.io
+    addr: 192.168.10.20
+  - name: proxmox-03.khaosx.io
+    addr: 192.168.10.20
+  - name: proxmox-03-mgt.khaosx.io
+    addr: 192.168.16.20
+  - name: hubitat.khaosx.io
+    addr: 192.168.10.21
+  - name: homebridge-01.khaosx.io
+    addr: 192.168.10.23
+  - name: palladium.khaosx.io
+    addr: 192.168.10.24
+  - name: plex-01.khaosx.io
+    addr: 192.168.10.25
+  - name: pihole-01.khaosx.io
+    addr: 192.168.10.37
+  - name: pihole-02.khaosx.io
+    addr: 192.168.10.38
+  - name: mediaops.khaosx.io
+    addr: 192.168.10.40
+  - name: steady-rain.khaosx.io
+    addr: 192.168.10.56
+
+############################################################################################
+#                        Secret data - You should vault these!                             #
+############################################################################################
+
+cf_dns_email: !vault |
+              $ANSIBLE_VAULT;1.1;AES256
+              31316462613038363965366561346231356138663561333835373430356238373261306562303962
+              3934336264303539383466333362613333653163363736370a323664613034313834393863356636
+              62363236363431393538643231393936643132636536366332323862333862386164623639386666
+              3362356136393033660a616236343236633961356263383766653637636230646439363463323562
+              36346261653332303634656333336534386262343365636335323864626136643537
+cf_dns_api: !vault |
+            $ANSIBLE_VAULT;1.1;AES256
+            38623666623939663837326465396464386331333839616634383637663233373834396236376232
+            3132613661373437343438353436323034303234653230610a393037616239303332336431393334
+            36316261336161386536613833316364396437353334396665386131343836393533323839383539
+            3839633565396565300a663833386666346662613264306338316538643136353964663335616132
+            63343839393666313439313365666530623832643061306238646536346662316633663161663935
+            3137383036323932346363636433643330343239323230323166
+pihole_web_admin_password: !vault |
+                           $ANSIBLE_VAULT;1.1;AES256
+                           30613630386563643466373464366663306164316165376233343932386538363034353233656239
+                           6230363035336639613633656434313564313339666565620a386332363661356266356634373465
+                           61653731353338326666626135383966393930613961363236633333376634653234343638623836
+                           6131653837663665640a356532333334666436393061333639313230323333616664393037313934
+                           3963

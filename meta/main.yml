@@ -2,17 +2,21 @@
 dependencies: []
 
 galaxy_info:
-  role_name: homebridge
+  role_name: pihole_ssl
   author: Kristopher Newman
-  description: Install and configure Homebridge
+  description: "An Ansible role to install and configure Pi-hole with SSL support."
   license: MIT
   min_ansible_version: 2.10
   platforms:
-    - name: Debian
-      versions:
-        - all
     - name: Ubuntu
       versions:
-        - all
+        - "18.04"
+        - "20.04"
+        - "22.04"
   galaxy_tags:
-    - homebridge
+    - networking
+    - security
+    - dns
+    - ssl
+    - pihole
+

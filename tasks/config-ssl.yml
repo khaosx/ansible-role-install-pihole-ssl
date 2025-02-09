@@ -1,0 +1,52 @@
+---
+- name: Create secrets directory
+  file:
+    path: /root/.secrets
+    state: directory
+    mode: '0700'
+
+- name: Create cloudflare.ini
+  template:
+    src: root.secrets.cloudflare.ini.j2
+    dest: /root/.secrets/cloudflare.ini
+    mode: "0400"
+
+- name: Create deploy hook script
+  template:
+    src: root.deploy-hook.sh.j2
+    dest: /root/deploy_hook.sh
+    mode: "0700"
+
+- name: Create update certs script
+  template:
+    src: root.update-certs.sh.j2
+    dest: /root/update-certs.sh
+    mode: "0700"
+
+- name: Configure Lighttpd for SSL
+  template:
+    src: etc.lighttpd.conf-enabled.20-pihole-external.conf.j2
+    dest: /etc/lighttpd/conf-enabled/20-pihole-external.conf
+    mode: "0644"
+  notify: Restart lighttpd
+
+- name: Check for existing certificate
+  stat:
+    path: "/etc/letsencrypt/live/{{ inventory_hostname }}.{{ fqdn }}/fullchain.pem"
+  register: letsencrypt_cert
+
+- name: Obtain Let's Encrypt certificate
+  command: >
+    certbot certonly --agree-tos -m {{ admin_email }} -n
+    --deploy-hook /root/deploy_hook.sh --dns-cloudflare
+    --dns-cloudflare-credentials /root/.secrets/cloudflare.ini
+    --dns-cloudflare-propagation-seconds 60 -d
+    {{ inventory_hostname }}.{{ fqdn }} --preferred-challenges dns-01
+  when: not letsencrypt_cert.stat.exists
+  notify: Restart lighttpd
+
+- name: Set up cron job for cert renewal
+  cron:
+    name: "Renew LE Certs"
+    special_time: daily
+    job: "/root/update-certs.sh >/dev/null 2>&1"

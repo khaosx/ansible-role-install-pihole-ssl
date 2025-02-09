@@ -1,0 +1,42 @@
+---
+
+pihole_apps_needed:
+  - netcat-traditional
+  - unzip
+  - idn2
+  - sqlite3
+  - lighttpd
+  - php-common
+  - php-cgi
+  - php-sqlite3
+  - php-xml
+  - php-intl
+  - certbot
+  - python3-certbot-dns-cloudflare
+  - dns-root-data
+
+install_pihole: true
+install_letsencrypt_ssl_cert: true
+fqdn: "example.com"
+
+# Default (example) secrets
+pihole_web_admin_password: "default_password"
+cf_dns_email: "default_email@example.com"
+cf_dns_api: "default_api_key"
+admin_email: "default_admin_email@example.com"
+
+pihole_interface: "eth0"
+pihole_setup_dnssec: true
+pihole_setup_rev_server: true
+pihole_setup_rev_server_cidr: "192.168.0.0/16"
+pihole_setup_rev_server_target: "192.168.10.1"
+pihole_setup_rev_server_domain: "example.com"
+pihole_setup_cache_size: 10000
+pihole_setup_ftlconf_rate_limit: "5000/60"
+pihole_setup_pihole_dns_1: "1.1.1.1"
+pihole_setup_pihole_dns_2: "1.0.0.1"
+
+# Custom DNS entries
+pihole_custom_dns_entries:
+  - name: "router.example.com"
+    addr: "192.168.10.1"

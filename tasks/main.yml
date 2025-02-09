@@ -1,0 +1,43 @@
+---
+
+- name: Check for existence of vars/secrets.yml
+  stat:
+    path: vars/secrets.yml
+  register: secrets_file
+
+- name: Include vars/secrets.yml if it exists
+  include_vars:
+    file: vars/secrets.yml
+  when: secrets_file.stat.exists
+
+- name: Update apt cache and packages
+  apt:
+    update_cache: true
+    autoclean: true
+    cache_valid_time: 3600
+
+- name: Install pre-requisites
+  apt:
+    name: "{{ pihole_apps_needed }}"
+    state: present
+
+- name: Install Pi-hole
+  import_tasks: tasks/config-pihole.yml
+  when: install_pihole
+
+- name: Set up Let's Encrypt SSL
+  import_tasks: tasks/config-ssl.yml
+  when: install_letsencrypt_ssl_cert
+
+- name: Check if reboot is needed
+  stat:
+    path: /var/run/reboot-required
+  register: reboot_required_file
+
+- name: Reboot server if needed
+  reboot:
+    msg: "Reboot initiated by Ansible"
+    reboot_timeout: 600
+    pre_reboot_delay: 15
+    test_command: whoami
+  when: reboot_required_file.stat.exists

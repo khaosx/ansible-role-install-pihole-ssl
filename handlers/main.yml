@@ -1,0 +1,13 @@
+---
+# handlers file for pihole
+
+- name: Restart Pi-hole
+  command: 'pihole restartdns'
+
+- name: Restart lighttpd
+  service:
+    name: lighttpd
+    state: restarted
+
+- name: Test Pi-hole configuration
+  include_tasks: ../test-pihole.yml

@@ -1,0 +1,21 @@
+# {{ ansible_managed | comment }}
+
+$HTTP["host"] == "{{ inventory_hostname }}.{{ fqdn }}" {
+  setenv.add-environment = ("fqdn" => "true")
+
+  $SERVER["socket"] == ":443" {
+    ssl.engine = "enable"
+    ssl.pemfile = "/etc/letsencrypt/live/{{ inventory_hostname }}.{{ fqdn }}/combined.pem"
+    ssl.ca-file =  "/etc/letsencrypt/live/{{ inventory_hostname }}.{{ fqdn }}/fullchain.pem"
+    ssl.honor-cipher-order = "enable"
+    ssl.cipher-list = "EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH"
+    ssl.use-sslv2 = "disable"
+    ssl.use-sslv3 = "disable"
+  }
+
+  $HTTP["scheme"] == "http" {
+    $HTTP["host"] =~ ".*" {
+      url.redirect = (".*" => "https://%0$0")
+    }
+  }
+}

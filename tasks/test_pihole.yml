@@ -1,0 +1,32 @@
+---
+
+- name: Fetch the IP address of the Pi-hole interface
+  set_fact:
+    pihole_bind_addr: "{{ hostvars[inventory_hostname]['ansible_' + pihole_interface].ipv4.address }}"
+
+- name: Ensure DNS resolution of pi-hole.net is successful
+  command: dig pi-hole.net @{{ pihole_bind_addr }}
+  register: dig_result
+  failed_when: "'NOERROR' not in dig_result.stdout"
+  changed_when: false
+
+- name: Ensure DNS resolution of an ad domain is blocked
+  command: dig doubleclick.net @{{ pihole_bind_addr }}
+  register: ad_dig_result
+  failed_when: "'ANSWER SECTION' in ad_dig_result.stdout and '0.0.0.0' not in ad_dig_result.stdout"
+  changed_when: false
+
+- name: Test DNSSEC validation if enabled
+  when: pihole_setup_dnssec
+  block:
+    - name: Test DNSSEC failure
+      command: dig sigfail.verteiltesysteme.net @{{ pihole_bind_addr }}
+      register: dnssec_fail
+      failed_when: "'SERVFAIL' not in dnssec_fail.stdout"
+      changed_when: false
+
+    - name: Test DNSSEC success
+      command: dig sigok.verteiltesysteme.net @{{ pihole_bind_addr }}
+      register: dnssec_success
+      failed_when: "'NOERROR' not in dnssec_success.stdout"
+      changed_when: false
